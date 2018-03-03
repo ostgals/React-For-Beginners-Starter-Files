@@ -1,4 +1,5 @@
 import React from 'react';
+import base from '../base';
 
 import Header from './Header';
 import Inventory from './Inventory';
@@ -12,9 +13,19 @@ class App extends React.Component {
     fishes: {},
     order: {}
   }
+  componentDidMount() {
+    const { storeId } = this.props.match.params;
+    this.dataRef = base.syncState(`${storeId}/fishes`, {
+      context: this,
+      state: 'fishes'
+    });
+  }
+  componentWillUnmount() {
+    base.removeBinding(this.dataRef);
+  }
   addFish = (fish) => {
     const fishes = {...this.state.fishes};
-    fishes[`fish-${Date.now()}`] = fish;
+    fishes[`fish${Date.now()}`] = fish;
     this.setState({ fishes });
   }
   loadSampleFishes = () => {
@@ -41,7 +52,10 @@ class App extends React.Component {
             ))}
           </ul>
         </div>
-        <Order />
+        <Order
+          fishes={this.state.fishes}
+          order={this.state.order}
+        />
         <Inventory
           addFish={this.addFish}
           loadSampleFishes={this.loadSampleFishes}
