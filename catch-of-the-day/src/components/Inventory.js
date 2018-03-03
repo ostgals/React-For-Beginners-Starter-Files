@@ -11,6 +11,7 @@ const Inventory = (props) => (
         fishKey={key}
         fish={props.fishes[key]}
         updateFish={props.updateFish}
+        deleteFish={props.deleteFish}
       />
     ))}
     <AddFishForm addFish={props.addFish} />
