@@ -1,10 +1,19 @@
 import React from 'react';
-import FishForm from './FishForm';
+import AddFishForm from './AddFishForm';
+import EditFishForm from './EditFishForm';
 
 const Inventory = (props) => (
   <div className="inventory">
     <h2>Inventory</h2>
-    <FishForm addFish={props.addFish} />
+    {Object.keys(props.fishes).map(key => (
+      <EditFishForm
+        key={key}
+        fishKey={key}
+        fish={props.fishes[key]}
+        updateFish={props.updateFish}
+      />
+    ))}
+    <AddFishForm addFish={props.addFish} />
     <button onClick={props.loadSampleFishes}>Load Sample Fishes</button>
   </div>
 );

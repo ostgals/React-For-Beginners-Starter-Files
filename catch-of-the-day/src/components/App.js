@@ -15,27 +15,50 @@ class App extends React.Component {
   }
   componentDidMount() {
     const { storeId } = this.props.match.params;
+    // first reinstate our localStorage
+    const localStorageRef = localStorage.getItem(storeId);
+    if (localStorageRef) {
+      this.setState({ order: JSON.parse(localStorageRef) });
+    }
+
     this.dataRef = base.syncState(`${storeId}/fishes`, {
       context: this,
       state: 'fishes'
     });
   }
+
+  componentDidUpdate() {
+    localStorage.setItem(
+      this.props.match.params.storeId,
+      JSON.stringify(this.state.order)
+    );
+  }
   componentWillUnmount() {
     base.removeBinding(this.dataRef);
   }
+
   addFish = (fish) => {
     const fishes = {...this.state.fishes};
     fishes[`fish${Date.now()}`] = fish;
     this.setState({ fishes });
   }
+
+  updateFish = (key, updatedFish) => {
+    this.setState({
+      fishes: { ...this.state.fishes, [key]: updatedFish }
+    });
+  }
+
   loadSampleFishes = () => {
     this.setState({ fishes: sampleFishes });
   }
+
   addToOrder = (key) => {
     const order = {...this.state.order}
     order[key] = order[key] + 1 || 1;
     this.setState({ order });
   }
+
   render() {
     return (
       <div className="catch-of-the-day">
@@ -58,11 +81,14 @@ class App extends React.Component {
         />
         <Inventory
           addFish={this.addFish}
+          updateFish={this.updateFish}
+          fishes={this.state.fishes}
           loadSampleFishes={this.loadSampleFishes}
         />
       </div>
-    );
+    )
   }
+
 }
 
 export default App;
